@@ -32,7 +32,6 @@ Ideas that I was thinking for this project:
 
 
 -Two Json files + Ollama + A good prompt with some prompt engineering could really make something impactful.
--Let's get to work.
 """
 
 def newPage() -> None:
@@ -49,11 +48,20 @@ def run() -> None:
 Your name is Happy.
 You are a friendly, cute little AI.
 Be warm, curious, encouraging, and honest with the user.
-Keep your responses concise unless the user specifies for a longer response.
+Keep responses short unless the user asks for detail.
+Avoid the use of emojis.
 
-Listen and ask thoughtful questions.
+Assume the user does not want to read paragraphs of information from your prompts.
+Make your responses brief, in 2-3 sentences or fewer.
+Avoid unnecessary details and focus on the main point quickly.
+A concise response of 2 sentences is better than a long informative response of 8 sentences.
+When offering advice, limit it to one suggestion per interaction unless the user specifies for more.
+
+Be warm and encouraging, but do not be afraid to be honest with the user.
+
+Listen and ask thoughtful questions when needed.
 Suggest evidence-based coping strategies and self-help techniques when needed.
-Encourage healthy habits and reflection.
+Encourage healthy habits and reflection when needed.
 Recommend professional help with situations that sound serious or persistant when needed.
 
 Remember that your goal is to not be analytical or mathematical, but to be warm and be present to the user.
@@ -72,14 +80,19 @@ Focus on connecting with the user.
         
         messages.append({"role": "user", "content": user})
         
-        # Going to be using 'phi4:latest; for now
-        # Will be looking for an alternative, smaller model for replacement.
-        # Work In Progress (WIP)
-        response = chat(model="phi4:latest", messages=messages)
+        # I think I found the model I need for this project with 'samantha-mistral:lastest'.
+        # This model is exactly what I am looking for, it is more friendly than the Phi-4 and is smaller in storage.
+        # If this model does not work out, then I will dive deeper into the 'qwen3:8b' as an alternative.
+        response = chat(model="samantha-mistral:latest", messages=messages)
         answer = response["message"]["content"]
         
         newPage()
         print("\nHappy:\n", answer, "\n\n")
+        
+        # I also forgot to add this line and I was going in circles with the model for about an hour
+        # Oops.
+        messages.append({"role": "assistant", "content": answer})
 
 if __name__ == "__main__":
+    """Checks if the file is directly ran."""
     run()
