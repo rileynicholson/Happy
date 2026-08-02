@@ -1,3 +1,5 @@
+import atexit
+import json
 from ollama import chat
 
 """
@@ -27,19 +29,57 @@ Ideas that I was thinking for this project:
 -One of the major hurdles I want to do differently from J.A.R.V.I.S is accessibility.
     -J.A.R.V.I.S requires a lot of installation whether it is external libraries or the Ollama model itself (which is 9.1 GB, HUGE).
     -I want this project to have a smaller AI model that still fits the project well.
-        -Which model? No clue yet.
     -I also want this project to include as few external libraries as possible, which should not be too challenging for this project.
 
 
 -Two Json files + Ollama + A good prompt with some prompt engineering could really make something impactful.
 """
 
-def newPage() -> None:
+def New_Page() -> None:
     """Space out the outputs of Happy for formatting."""
     for i in range(100):
         print()
+        
+def Read_SaveFile(messages: list[dict[str, str]]) -> None:
+    """Takes the conversation summarizations from the JSON save file and appends them into the messages. Happens before a conversation.
 
-def run() -> None:
+    Args:
+        messages: The overall scope of the conversation and system instructions.
+
+    """
+    # In contrast to 'Write_SaveFile', this function will be used before a conversation starts.
+    # I am planning to have this method read summarizations of past conversations by the AI then append the summarizations to 'messages'.
+    # The summarizations will probably be appended under the role of 'system' instead of assistant or user.
+    # I will have to make sure each of the summarizations consist of the starting phrase, "Conversation on (date) summarization: " to indicate it as a past conversation.
+    # I want to make sure the AI can differentiate between from a past conversation to prompt engineering especially if both will be under the 'system' role.
+    # I think how I am going to handle the two file design idea in relation to this is I am going to have the function read from a JSON of summarizations of what the AI said.
+    # Then I will have the function read from a JSON of summarizations of what the user said in the same conversation on the same date.
+    # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
+    # 
+    # Work In Progress (WIP)
+    
+def Write_SaveFile(messages: list[dict[str, str]]) -> None:
+    """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation.
+
+    Args:
+        messages: The overall scope of the conversation and system instructions.
+        
+    """
+    # In contrast to 'Read_SaveFile', this function will be used after a conversation ends.
+    # I do not think this 'Write_SaveFile' function will be called in the 'Run' function at all.
+    # I want this function to be called on when the program ends by default.
+    # This will cover boths means of a user ending the program, whether it is the user physically ending the program or saying one of the conversation ending keywords.
+    # I am hoping I can execute this idea with the 'atexit' library.
+    # It is perfect because it is a Python default library and the user does not need to separately download it.
+    # I think how I am going to handle the two file design idea in relation to this is I am going to have the function write two different summarizations.
+    # One summarization will be of what the AI said during a conversation.
+    # One summarization will be of what the user said during a conversation.
+    # I will have to find a way to include the date of the conversation and maybe even the time of the conversation so the AI can detect elapsed time.
+    # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
+    #
+    # Work In Progress (WIP)
+
+def Run() -> None:
     """The conversation between the AI and the user."""
     messages = [
         {
@@ -62,7 +102,7 @@ Be warm and encouraging, but do not be afraid to be honest with the user.
 Listen and ask thoughtful questions when needed.
 Suggest evidence-based coping strategies and self-help techniques when needed.
 Encourage healthy habits and reflection when needed.
-Recommend professional help with situations that sound serious or persistant when needed.
+Recommend professional help with situations that sound serious or persistent when needed.
 
 Remember that your goal is to not be analytical or mathematical, but to be warm and be present to the user.
 Have personality, be the light in the darkness, be approachable.
@@ -80,19 +120,17 @@ Focus on connecting with the user.
         
         messages.append({"role": "user", "content": user})
         
-        # I think I found the model I need for this project with 'samantha-mistral:lastest'.
+        # I think I found the model I need for this project with 'samantha-mistral:latest'.
         # This model is exactly what I am looking for, it is more friendly than the Phi-4 and is smaller in storage.
         # If this model does not work out, then I will dive deeper into the 'qwen3:8b' as an alternative.
         response = chat(model="samantha-mistral:latest", messages=messages)
         answer = response["message"]["content"]
         
-        newPage()
+        New_Page()
         print("\nHappy:\n", answer, "\n\n")
         
-        # I also forgot to add this line and I was going in circles with the model for about an hour
-        # Oops.
         messages.append({"role": "assistant", "content": answer})
 
 if __name__ == "__main__":
     """Checks if the file is directly ran."""
-    run()
+    Run()
