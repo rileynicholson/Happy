@@ -117,7 +117,7 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
     
     try:
         with open("userlogs.json", "a") as file:
-            # ANS
+            print() # So it compiles
             
     except Exception as e:
         new_page()
@@ -126,7 +126,7 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
     
     try:
         with open("happylogs.json", "a") as file:
-            # ANS
+            print() # So it compiles
             
     except Exception as e:
         new_page()
