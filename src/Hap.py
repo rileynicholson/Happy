@@ -1,6 +1,8 @@
 import atexit
+import datetime
 import json
 from ollama import chat
+from pathlib import Path
 
 """
 Ideas that I was thinking for this project:
@@ -41,11 +43,13 @@ def New_Page() -> None:
         print()
         
 def Read_SaveFile(messages: list[dict[str, str]]) -> None:
-    """Takes the conversation summarizations from the JSON save file and appends them into the messages. Happens before a conversation.
+    """Takes the conversation summarizations from the JSON save file and appends them into the message history. Happens before a conversation.
 
     Args:
         messages: The overall scope of the conversation and system instructions.
-
+        
+    Raises:
+        Exception: If file cannot be opened.
     """
     # In contrast to 'Write_SaveFile', this function will be used before a conversation starts.
     # I am planning to have this method read summarizations of past conversations by the AI then append the summarizations to 'messages'.
@@ -57,13 +61,44 @@ def Read_SaveFile(messages: list[dict[str, str]]) -> None:
     # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
     # 
     # Work In Progress (WIP)
+    userlogs = Path("userlogs.json")
+    happylogs = Path("happylogs.json")
     
+    if userlogs.is_file() or happylogs.is_file():
+        try:
+            with open("userlogs.json", "r") as file:
+                userData = json.load(file)
+        
+            for i in range(len(userData)):
+                messages.append({"role": "system", "content": userData[i]})
+        
+        except Exception as e:
+            newPage()
+            print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
+            return
+    
+        try:
+            with open("happylogs.json", "r") as file:
+                happyData = json.load(file)
+            
+            for i in range(len(happyData)):
+                messages.append({"role": "system", "content": happyData[i]})
+    
+        except Exception as e:
+            newPage()
+            print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
+            return
+    
+    
+@atexit.register
 def Write_SaveFile(messages: list[dict[str, str]]) -> None:
-    """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation.
+    """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation once the program itself ends.
 
     Args:
         messages: The overall scope of the conversation and system instructions.
-        
+    
+    Raises:
+        Exception: If file cannot be opened.
     """
     # In contrast to 'Read_SaveFile', this function will be used after a conversation ends.
     # I do not think this 'Write_SaveFile' function will be called in the 'Run' function at all.
@@ -78,6 +113,24 @@ def Write_SaveFile(messages: list[dict[str, str]]) -> None:
     # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
     #
     # Work In Progress (WIP)
+    
+    try:
+        with open("userlogs.json", "a") as file:
+            # ANS
+            
+    except Exception as e:
+        newPage()
+        print("\nError: Program cannot store past conversation. Conversation will not be saved.")
+        return
+    
+    try:
+        with open("happylogs.json", "a") as file:
+            # ANS
+            
+    except Exception as e:
+        newPage()
+        print("\nError: Program cannot store past conversation. Conversation will not be saved.")
+        return
 
 def Run() -> None:
     """The conversation between the AI and the user."""
@@ -122,7 +175,7 @@ Focus on connecting with the user.
         
         # I think I found the model I need for this project with 'samantha-mistral:latest'.
         # This model is exactly what I am looking for, it is more friendly than the Phi-4 and is smaller in storage.
-        # If this model does not work out, then I will dive deeper into the 'qwen3:8b' as an alternative.
+        # If this model does not work out, then I will dive deeper into the 'qwen3:8b' model as an alternative.
         response = chat(model="samantha-mistral:latest", messages=messages)
         answer = response["message"]["content"]
         
