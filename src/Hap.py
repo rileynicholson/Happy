@@ -1,5 +1,5 @@
 import atexit
-import datetime
+from datetime import datetime
 import json
 from ollama import chat
 from pathlib import Path
@@ -23,7 +23,8 @@ Ideas that I was thinking for this project:
 -I want Happy to detect the significance of certain events/prompts the user tells Happy about.
 
 -In order to get that "Happy remembering information" aspect, I was thinking of having 2 save files/json files to store information.
-    -One of the files can be for the user and saves every single prompt the user has sent to Happy.
+    -One of the files can be for the user and and can take the conversation when it is finished, summarize it and include key points,
+    and store it within its own file.
     -The other file can be for Happy and can take the conversation when it is finished, summarize it and include key points,
     and store it within its own file.
     -I feel like this design would be efficient and at the very least, be a good starting blueprint for Happy.
@@ -34,15 +35,15 @@ Ideas that I was thinking for this project:
     -I also want this project to include as few external libraries as possible, which should not be too challenging for this project.
 
 
--Two Json files + Ollama + A good prompt with some prompt engineering could really make something impactful.
+-Two Json files + Ollama + A good prompt with some prompt engineering could really make something impactful for someone.
 """
 
-def New_Page() -> None:
+def new_page() -> None:
     """Space out the outputs of Happy for formatting."""
     for i in range(100):
         print()
         
-def Read_SaveFile(messages: list[dict[str, str]]) -> None:
+def read_saveFile(messages: list[dict[str, str]]) -> None:
     """Takes the conversation summarizations from the JSON save file and appends them into the message history. Happens before a conversation.
 
     Args:
@@ -66,32 +67,32 @@ def Read_SaveFile(messages: list[dict[str, str]]) -> None:
     
     if userlogs.is_file() or happylogs.is_file():
         try:
-            with open("userlogs.json", "r") as file:
+            with open(userlogs, "r") as file:
                 userData = json.load(file)
         
             for i in range(len(userData)):
                 messages.append({"role": "system", "content": userData[i]})
         
         except Exception as e:
-            newPage()
+            new_page()
             print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
             return
     
         try:
-            with open("happylogs.json", "r") as file:
+            with open(happylogs, "r") as file:
                 happyData = json.load(file)
             
             for i in range(len(happyData)):
                 messages.append({"role": "system", "content": happyData[i]})
     
         except Exception as e:
-            newPage()
+            new_page()
             print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
             return
     
     
 @atexit.register
-def Write_SaveFile(messages: list[dict[str, str]]) -> None:
+def write_saveFile(messages: list[dict[str, str]]) -> None:
     """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation once the program itself ends.
 
     Args:
@@ -119,7 +120,7 @@ def Write_SaveFile(messages: list[dict[str, str]]) -> None:
             # ANS
             
     except Exception as e:
-        newPage()
+        new_page()
         print("\nError: Program cannot store past conversation. Conversation will not be saved.")
         return
     
@@ -128,7 +129,7 @@ def Write_SaveFile(messages: list[dict[str, str]]) -> None:
             # ANS
             
     except Exception as e:
-        newPage()
+        new_page()
         print("\nError: Program cannot store past conversation. Conversation will not be saved.")
         return
 
@@ -179,7 +180,7 @@ Focus on connecting with the user.
         response = chat(model="samantha-mistral:latest", messages=messages)
         answer = response["message"]["content"]
         
-        New_Page()
+        new_page()
         print("\nHappy:\n", answer, "\n\n")
         
         messages.append({"role": "assistant", "content": answer})
