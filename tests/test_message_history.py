@@ -1,7 +1,6 @@
 import unittest
 
 class Tests(unittest.TestCase):
-"""Test suite for validating proper conversation history storage."""
 
     def setUp(self):
         """Simulates a conversation between a user and Happy about a Birthday Party."""
