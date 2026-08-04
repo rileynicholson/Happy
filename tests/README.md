@@ -5,5 +5,8 @@ Since Happy is an AI, standard `unittest` cases that involve the same results ev
 `test_date.py`
 - Tests Happy's ability to understand the current date and time. Happy is prompted to display the current date and time with given information about the current date and time. This information is courtesy of the `datetime` standard library.
 
+`test_happy_referencing_message_history.py`
+- Simulates the program gathering the conversation history from JSON files. Happy is prompted about information about the old, saved conversation. The `datetime` library is used in a formatted string to represent the date in this test.
+
 `test_message_history.py`
 - Simulates a conversation between the user and Happy about a Birthday Party, then uses `unittest` to ensure proper storage of message history of both sides. One test looks at the storage of all of the messages Happy sends, and the other test looks at the storage of all the messages the user sends.
