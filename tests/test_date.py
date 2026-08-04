@@ -45,7 +45,7 @@ Focus on connecting with the user.
     #
     # "Hello! Today is (Current day of the week), (Month) (Day), (Year). The current time is (Current time). What would you like to talk about today?"
     #
-    # Happy will not output this exactly for batum.
+    # Happy will not output this exactly verbatim.
         
     messages.append({"role": "assistant", "content": answer})
 
