@@ -52,46 +52,38 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
     Raises:
         Exception: If file cannot be opened.
     """
-    # In contrast to 'Write_SaveFile', this function will be used before a conversation starts.
-    # I am planning to have this method read summarizations of past conversations by the AI then append the summarizations to 'messages'.
-    # The summarizations will probably be appended under the role of 'system' instead of assistant or user.
-    # I will have to make sure each of the summarizations consist of the starting phrase, "Conversation on (date) summarization: " to indicate it as a past conversation.
-    # I want to make sure the AI can differentiate between from a past conversation to prompt engineering especially if both will be under the 'system' role.
-    # I think how I am going to handle the two file design idea in relation to this is I am going to have the function read from a JSON of summarizations of what the AI said.
-    # Then I will have the function read from a JSON of summarizations of what the user said in the same conversation on the same date.
-    # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
-    # 
     # Work In Progress (WIP)
-    userlogs = Path("userlogs.json")
     happylogs = Path("happylogs.json")
-    
-    if userlogs.is_file() or happylogs.is_file():
+    happyData = ""
+    userlogs = Path("userlogs.json")
+    userData = ""
+
+    # GLITCH/BUG:
+    # Exception always gets triggered here after 2 conversations have been stored in JSON file.
+    # It has something to do with the way the JSON files are read and stored.
+    # This problem cannot be ignored for the future.
+    if userlogs.is_file():
         try:
             with open(userlogs, "r") as file:
                 userData = json.load(file)
-        
-            for i in range(len(userData)):
-                messages.append({"role": "system", "content": userData[i]})
+                messages.append({"role": "system", "content": userData})
         
         except Exception as e:
             new_page()
-            print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
+            print("Error: Program cannot access past conversations. Old data cannot be retreived.\n")
             return
-    
+
+    if happylogs.is_file():
         try:
             with open(happylogs, "r") as file:
                 happyData = json.load(file)
-            
-            for i in range(len(happyData)):
-                messages.append({"role": "system", "content": happyData[i]})
+                messages.append({"role": "system", "content": happyData})
     
         except Exception as e:
             new_page()
-            print("Error: Program cannot access past conversations. Data cannot be retreived.\n")
+            print("Error: Program cannot access past conversations. Old data cannot be retreived.\n")
             return
-    
-    
-@atexit.register
+
 def write_saveFile(messages: list[dict[str, str]]) -> None:
     """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation once the program itself ends.
 
@@ -101,37 +93,44 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
     Raises:
         Exception: If file cannot be opened.
     """
-    # In contrast to 'Read_SaveFile', this function will be used after a conversation ends.
-    # I do not think this 'Write_SaveFile' function will be called in the 'Run' function at all.
-    # I want this function to be called on when the program ends by default.
-    # This will cover boths means of a user ending the program, whether it is the user physically ending the program or saying one of the conversation ending keywords.
-    # I am hoping I can execute this idea with the 'atexit' library.
-    # It is perfect because it is a Python default library and the user does not need to separately download it.
-    # I think how I am going to handle the two file design idea in relation to this is I am going to have the function write two different summarizations.
-    # One summarization will be of what the AI said during a conversation.
-    # One summarization will be of what the user said during a conversation.
-    # I will have to find a way to include the date of the conversation and maybe even the time of the conversation so the AI can detect elapsed time.
-    # I might even have conversation numbers within the JSON files to sort the summarizations together, but I am not entirely sure yet.
-    #
     # Work In Progress (WIP)
+    happyMessages = f"On {datetime.now()}, you told the user:"
+    userMessages = f"On {datetime.now()}, the user told you:"
+    userMessageCount = 0
+
+    # Problem to be addressed:
+    # This area of the program reuses a lot of code.
+    # Please come up with a function that recycles the code that is repeated here.
+    for i in range(len(messages)):
+        if messages[i]["role"] == "user":
+            userMessageCount += 1
+
+    if userMessageCount > 1:
+        for i in range(len(messages)):
+            if messages[i]["role"] == "user":
+                userMessages += " " + messages[i]["content"]
     
-    try:
-        with open("userlogs.json", "a") as file:
-            print() # So it compiles
+        try:
+            with open("userlogs.json", "a") as file:
+                json.dump(userMessages, file)
             
-    except Exception as e:
-        new_page()
-        print("\nError: Program cannot store past conversation. Conversation will not be saved.")
-        return
+        except Exception as e:
+            new_page()
+            print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
+            return
     
-    try:
-        with open("happylogs.json", "a") as file:
-            print() # So it compiles
+        for i in range(len(messages)):
+            if messages[i]["role"] == "assistant":
+                happyMessages += " " + messages[i]["content"]
+    
+        try:
+            with open("happylogs.json", "a") as file:
+                json.dump(happyMessages, file)
             
-    except Exception as e:
-        new_page()
-        print("\nError: Program cannot store past conversation. Conversation will not be saved.")
-        return
+        except Exception as e:
+            new_page()
+            print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
+            return
 
 def Run() -> None:
     """The conversation between the AI and the user."""
@@ -165,6 +164,9 @@ Focus on connecting with the user.
             }
         ]
     
+    atexit.register(write_saveFile, messages)
+    read_saveFile(messages)
+    
     while True:
         print()
         user = input("You:\n")
@@ -184,6 +186,10 @@ Focus on connecting with the user.
         print("\nHappy:\n", answer, "\n\n")
         
         messages.append({"role": "assistant", "content": answer})
+
+    def getMessages() -> list[dict[str, str]]:
+        return messages
+
 
 if __name__ == "__main__":
     """Checks if the file is directly ran."""
