@@ -84,6 +84,24 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
             print("Error: Program cannot access past conversations. Old data cannot be retreived.\n")
             return
 
+def find_messages(messages: list[dict[str, str]], role: str) -> str:
+    """Finds the amount of messages a certain user has.
+
+    Args:
+        messages: The overall scope of the conversation and system instructions.
+        role: The type of user whose messages the function looks for.
+        
+    Returns:
+        A string containing all of the role's messages.
+    """
+    totalMessages = ""
+    
+    for i in range(len(messages)):
+        if messages[i]["role"] == role:
+            totalMessages += " " + messages[i]["content"]
+            
+    return totalMessages
+
 def write_saveFile(messages: list[dict[str, str]]) -> None:
     """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation once the program itself ends.
 
@@ -104,11 +122,15 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
     for i in range(len(messages)):
         if messages[i]["role"] == "user":
             userMessageCount += 1
-
+    
     if userMessageCount > 1:
+        """
         for i in range(len(messages)):
             if messages[i]["role"] == "user":
                 userMessages += " " + messages[i]["content"]
+        """
+    
+        userMessages += find_messages(messages, "user")
     
         try:
             with open("userlogs.json", "a") as file:
@@ -118,11 +140,15 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
             new_page()
             print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
             return
-    
+        
+        """
         for i in range(len(messages)):
             if messages[i]["role"] == "assistant":
                 happyMessages += " " + messages[i]["content"]
-    
+        """
+        
+        happyMessages += find_messages(messages, "assistant:")
+        
         try:
             with open("happylogs.json", "a") as file:
                 json.dump(happyMessages, file)
