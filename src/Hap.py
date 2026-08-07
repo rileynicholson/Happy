@@ -116,28 +116,18 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
     userMessages = f"On {datetime.now()}, the user told you:"
     userMessageCount = 0
 
-    # Problem to be addressed:
-    # This area of the program reuses a lot of code.
-    # Please come up with a function that recycles the code that is repeated here.
     for i in range(len(messages)):
         if messages[i]["role"] == "user":
             userMessageCount += 1
     
     if userMessageCount > 1:
         userMessages += find_messages(messages, "user")
+        happyMessages += find_messages(messages, "assistant")
     
         try:
             with open("userlogs.json", "a") as file:
                 json.dump(userMessages, file)
-            
-        except Exception as e:
-            new_page()
-            print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
-            return
-        
-        happyMessages += find_messages(messages, "assistant")
-        
-        try:
+
             with open("happylogs.json", "a") as file:
                 json.dump(happyMessages, file)
             
