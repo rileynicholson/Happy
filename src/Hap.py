@@ -85,7 +85,7 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
             return
 
 def find_messages(messages: list[dict[str, str]], role: str) -> str:
-    """Finds the amount of messages a certain user has.
+    """Finds the amount of messages a certain role has.
 
     Args:
         messages: The overall scope of the conversation and system instructions.
@@ -99,7 +99,7 @@ def find_messages(messages: list[dict[str, str]], role: str) -> str:
     for i in range(len(messages)):
         if messages[i]["role"] == role:
             totalMessages += " " + messages[i]["content"]
-            
+
     return totalMessages
 
 def write_saveFile(messages: list[dict[str, str]]) -> None:
@@ -124,12 +124,6 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
             userMessageCount += 1
     
     if userMessageCount > 1:
-        """
-        for i in range(len(messages)):
-            if messages[i]["role"] == "user":
-                userMessages += " " + messages[i]["content"]
-        """
-    
         userMessages += find_messages(messages, "user")
     
         try:
@@ -141,13 +135,7 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
             print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
             return
         
-        """
-        for i in range(len(messages)):
-            if messages[i]["role"] == "assistant":
-                happyMessages += " " + messages[i]["content"]
-        """
-        
-        happyMessages += find_messages(messages, "assistant:")
+        happyMessages += find_messages(messages, "assistant")
         
         try:
             with open("happylogs.json", "a") as file:
