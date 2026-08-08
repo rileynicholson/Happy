@@ -66,7 +66,9 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
         try:
             with open(userlogs, "r") as file:
                 userData = json.load(file)
-                messages.append({"role": "system", "content": userData})
+
+                for i in range(len(userData)):
+                    messages.append({"role": "system", "content": userData[i]})
         
         except Exception as e:
             new_page()
@@ -77,7 +79,9 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
         try:
             with open(happylogs, "r") as file:
                 happyData = json.load(file)
-                messages.append({"role": "system", "content": happyData})
+
+                for i in range(len(happyData)):
+                    messages.append({"role": "system", "content": happyData[i]})
     
         except Exception as e:
             new_page()
@@ -92,7 +96,7 @@ def find_messages(messages: list[dict[str, str]], role: str) -> str:
         role: The type of user whose messages the function looks for.
         
     Returns:
-        A string containing all of the role's messages.
+        A string containing all messages from specified role.
     """
     totalMessages = ""
     
@@ -125,10 +129,12 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
         happyMessages += find_messages(messages, "assistant")
     
         try:
-            with open("userlogs.json", "a") as file:
+            # Using 'append' is invalid JSON
+            with open("userlogs.json", "w") as file:
                 json.dump(userMessages, file)
 
-            with open("happylogs.json", "a") as file:
+            # Using 'append' is invalid JSON
+            with open("happylogs.json", "w") as file:
                 json.dump(happyMessages, file)
             
         except Exception as e:
@@ -180,14 +186,11 @@ Focus on connecting with the user.
         
         messages.append({"role": "user", "content": user})
         
-        # I think I found the model I need for this project with 'samantha-mistral:latest'.
-        # This model is exactly what I am looking for, it is more friendly than the Phi-4 and is smaller in storage.
-        # If this model does not work out, then I will dive deeper into the 'qwen3:8b' model as an alternative.
         response = chat(model="samantha-mistral:latest", messages=messages)
         answer = response["message"]["content"]
         
         new_page()
-        print("\nHappy:\n", answer, "\n\n")
+        print("Happy:\n", answer, "\n\n")
         
         messages.append({"role": "assistant", "content": answer})
 
