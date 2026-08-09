@@ -43,7 +43,7 @@ def new_page() -> None:
     for i in range(100):
         print()
         
-def read_saveFile(messages: list[dict[str, str]]) -> None:
+def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData: list[str]) -> None:
     """Takes the conversation summarizations from the JSON save file and appends them into the message history. Happens before a conversation.
 
     Args:
@@ -54,18 +54,12 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
     """
     # Work In Progress (WIP)
     happylogs = Path("happylogs.json")
-    happyData = ""
     userlogs = Path("userlogs.json")
-    userData = ""
 
-    # GLITCH/BUG:
-    # Exception always gets triggered here after 2 conversations have been stored in JSON file.
-    # It has something to do with the way the JSON files are read and stored.
-    # This problem cannot be ignored for the future.
     if userlogs.is_file():
         try:
             with open(userlogs, "r") as file:
-                userData = json.load(file)
+                userData.extend(json.load(file))
 
                 for i in range(len(userData)):
                     messages.append({"role": "system", "content": userData[i]})
@@ -78,7 +72,7 @@ def read_saveFile(messages: list[dict[str, str]]) -> None:
     if happylogs.is_file():
         try:
             with open(happylogs, "r") as file:
-                happyData = json.load(file)
+                happyData.extend(json.load(file))
 
                 for i in range(len(happyData)):
                     messages.append({"role": "system", "content": happyData[i]})
@@ -106,7 +100,7 @@ def find_messages(messages: list[dict[str, str]], role: str) -> str:
 
     return totalMessages
 
-def write_saveFile(messages: list[dict[str, str]]) -> None:
+def write_saveFile(messages: list[dict[str, str]], happyData: list[str], userData: list[str]) -> None:
     """Summarizes the conversation then stores the summarization in a JSON file. Happens after a conversation once the program itself ends.
 
     Args:
@@ -125,25 +119,31 @@ def write_saveFile(messages: list[dict[str, str]]) -> None:
             userMessageCount += 1
     
     if userMessageCount > 1:
-        userMessages += find_messages(messages, "user")
         happyMessages += find_messages(messages, "assistant")
-    
+        userMessages += find_messages(messages, "user")
+        
+        happyData.append(happyMessages)
+        userData.append(userMessages)
+        
         try:
             # Using 'append' is invalid JSON
             with open("userlogs.json", "w") as file:
-                json.dump(userMessages, file)
+                json.dump(userData, file)
 
             # Using 'append' is invalid JSON
             with open("happylogs.json", "w") as file:
-                json.dump(happyMessages, file)
+                json.dump(happyData, file)
             
         except Exception as e:
             new_page()
-            print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
+            print(e)
+            #print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
             return
 
-def Run() -> None:
+def run() -> None:
     """The conversation between the AI and the user."""
+    happyData = []
+    userData = []
     messages = [
         {
             "role": "system",
@@ -174,8 +174,8 @@ Focus on connecting with the user.
             }
         ]
     
-    atexit.register(write_saveFile, messages)
-    read_saveFile(messages)
+    atexit.register(write_saveFile, messages, happyData=happyData, userData=userData)
+    read_saveFile(messages, happyData, userData)
     
     while True:
         print()
@@ -200,4 +200,4 @@ Focus on connecting with the user.
 
 if __name__ == "__main__":
     """Checks if the file is directly ran."""
-    Run()
+    run()
