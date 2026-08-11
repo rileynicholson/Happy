@@ -112,8 +112,8 @@ def write_saveFile(messages: list[dict[str, str]], happyData: list[str], userDat
     # Work In Progress (WIP)
     happyMessages = f"On {datetime.now()}, you told the user:"
     userMessages = f"On {datetime.now()}, the user told you:"
-    userMessageCount = 0
 
+    userMessageCount = 0
     for i in range(len(messages)):
         if messages[i]["role"] == "user":
             userMessageCount += 1
@@ -126,18 +126,15 @@ def write_saveFile(messages: list[dict[str, str]], happyData: list[str], userDat
         userData.append(userMessages)
         
         try:
-            # Using 'append' is invalid JSON
             with open("userlogs.json", "w") as file:
                 json.dump(userData, file)
 
-            # Using 'append' is invalid JSON
             with open("happylogs.json", "w") as file:
                 json.dump(happyData, file)
             
         except Exception as e:
             new_page()
-            print(e)
-            #print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
+            print("\nError: Program cannot store the conversation. Current conversation will not be saved.")
             return
 
 def run() -> None:
