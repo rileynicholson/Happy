@@ -5,6 +5,9 @@ Since Happy is an AI, standard `unittest` cases that involve the same results ev
 `test_date.py`
 - Tests Happy's ability to understand the current date and time. Happy is prompted to display the current date and time with given information about the current date and time. This information is courtesy of the `datetime` standard library.
 
+`test_happy_detecting_user_progress_across_elapsed_time.py`
+- Tests Happy's ability to understand elapsed time during a conversation. Happy is given a conversation that includes a goal the user wants to work towards. This simulated conversation is simulated to have been taken place on July 3rd, 2026, a while back. Happy is then prompted in present day about how the user has made progress with his goal. This test asks if Happy is able to see the progress the user has made, and how far the user has come.
+
 `test_happy_referencing_message_history.py`
 - Simulates the program gathering the conversation history from JSON files. Happy is prompted about information about the old, saved conversation. The `datetime` library is used in a formatted string to represent the dates used in this test.
 
