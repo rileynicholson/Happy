@@ -62,7 +62,10 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                 userData.extend(json.load(file))
 
                 for i in range(len(userData)):
-                    messages.append({"role": "system", "content": userData[i]})
+                    # Changed role from 'system' to 'assistant' for performance and accuracy.
+                    # I do, however, notice a bug that happens where whenever you start a new conversation, Happy treats it like a ongoing conversation.
+                    # This leads to Happy seemingly answering answers from old conversations again, or even referencing old information out of no where.
+                    messages.append({"role": "assistant", "content": userData[i]})
         
         except Exception as e:
             new_page()
@@ -75,7 +78,10 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                 happyData.extend(json.load(file))
 
                 for i in range(len(happyData)):
-                    messages.append({"role": "system", "content": happyData[i]})
+                    # Changed role from 'system' to 'user' for performance and accuracy.
+                    # I do, however, notice a bug that happens where whenever you start a new conversation, Happy treats it like a ongoing conversation.
+                    # This leads to Happy seemingly answering answers from old conversations again, or even referencing old information out of no where.
+                    messages.append({"role": "user", "content": happyData[i]})
     
         except Exception as e:
             new_page()
@@ -95,7 +101,9 @@ def find_messages(messages: list[dict[str, str]], role: str) -> str:
     totalMessages = ""
     
     for i in range(len(messages)):
-        if messages[i]["role"] == role:
+        # Simply added more to this if-then condition to only include content that is explicitly not information about older conversations.
+        # Can easily be reversed by removing all of the ands in the if-then condition below.
+        if messages[i]["role"] == role and "you told the user" not in messages[i]["content"] and "the user told you" not in messages[i]["content"]:
             totalMessages += " " + messages[i]["content"]
 
     return totalMessages
