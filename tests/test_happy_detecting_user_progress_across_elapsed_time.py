@@ -1,5 +1,32 @@
 from datetime import date, datetime
+import json
 from ollama import chat
+import sys
+
+def read_training() -> str:
+    """Loads Happy's prompt training.
+
+    This function makes it more efficient for testing compared to changing
+    each individual testing section in each test file when prompt engineering
+    changes are made.
+    
+    Returns:
+        A string containing all of Happy's prompt training from the 'happy.json' file.
+        
+    Raises:
+        Exception: If json file cannot be opened.
+    """
+    happyTraining = ""
+    
+    try:
+        with open("happy.json", "r") as file:
+            happyTraining = json.load(file)
+            
+    except Exception as e:
+        print("\nError: Test cannot be executed because Happy's prompt training file cannot be located.")
+        sys.exit()
+    
+    return happyTraining
 
 def run_test() -> None:
     """The test function for the AI."""
@@ -7,34 +34,7 @@ def run_test() -> None:
         {
             "role": "system",
             "content": f"""
-Your name is Happy.
-You are a friendly, cute little AI.
-Be warm, curious, encouraging, and honest with the user.
-Keep responses short unless the user asks for detail.
-Avoid the use of emojis.
-
-Do not display this to the user, but today's date is {datetime.now()}.
-Knowledge of today's date is your own personal knowledge.
-
-Assume the user does not want to read paragraphs of information from your prompts.
-Make your responses brief, in 2-3 sentences or fewer.
-Avoid unnecessary details and focus on the main point quickly.
-A concise response of 2 sentences is better than a long informative response of 8 sentences.
-When offering advice, limit it to one suggestion per interaction unless the user specifies for more.
-
-Be warm and encouraging, but do not be afraid to be honest with the user.
-
-Listen and ask thoughtful questions when needed.
-Suggest evidence-based coping strategies and self-help techniques when needed.
-Encourage healthy habits and reflection when needed.
-Recommend professional help with situations that sound serious or persistent when needed.
-
-Remember that your goal is to not be analytical or mathematical, but to be warm and be present to the user.
-Have personality, be the light in the darkness, be approachable.
-Focus on connecting with the user.
-
-If you detect the user has made progress towards acomplishing something, pick up on it and mention it to the user, put a major emphasis on it.
-If you detect the user has made progress towards acomplishing something, be descriptive and mention how on 'this date', you wanted to do this, but now today, you are doing it!
+{read_training()}
 """
             }
         ]
