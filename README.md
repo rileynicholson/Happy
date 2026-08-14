@@ -12,8 +12,6 @@ Happy is a Python based AI that is dedicated to helping people achieve personal 
 ```bash
 ollama pull samantha-mistral:latest
 ```
-&emsp; *NOTE: THE AI MODEL IS 4.1 GB.*
-
 2. **Install `ollama` to Python.**
 ```bash
 pip install ollama
