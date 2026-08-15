@@ -62,9 +62,14 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                 userData.extend(json.load(file))
 
                 for i in range(len(userData)):
-                    # Changed role from 'system' to 'assistant' for performance and accuracy.
-                    # I do, however, notice a bug that happens where whenever you start a new conversation, Happy treats it like a ongoing conversation.
-                    # This leads to Happy seemingly answering answers from old conversations again, or even referencing old information out of no where.
+                    # I believe there could be a future bug here in this information because conversation history looks like it will be stored as:
+                    #
+                    # Old User Messages on 8/12
+                    # Old User Messages on 8/14
+                    # Old Assistant Messages on 8/12
+                    # Old Assistant Messages on 8/14
+                    #
+                    # I am not sure if this is a safe design, but I do not want to risk confusing the model or leaving this design in for the model to confuse later.
                     messages.append({"role": "assistant", "content": userData[i]})
         
         except Exception as e:
@@ -78,9 +83,14 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                 happyData.extend(json.load(file))
 
                 for i in range(len(happyData)):
-                    # Changed role from 'system' to 'user' for performance and accuracy.
-                    # I do, however, notice a bug that happens where whenever you start a new conversation, Happy treats it like a ongoing conversation.
-                    # This leads to Happy seemingly answering answers from old conversations again, or even referencing old information out of no where.
+                    # I believe there could be a future bug here in this information because conversation history looks like it will be stored as:
+                    #
+                    # Old User Messages on 8/12
+                    # Old User Messages on 8/14
+                    # Old Assistant Messages on 8/12
+                    # Old Assistant Messages on 8/14
+                    #
+                    # I am not sure if this is a safe design, but I do not want to risk confusing the model or leaving this design in for the model to confuse later.
                     messages.append({"role": "user", "content": happyData[i]})
     
         except Exception as e:
@@ -101,8 +111,6 @@ def find_messages(messages: list[dict[str, str]], role: str) -> str:
     totalMessages = ""
     
     for i in range(len(messages)):
-        # Simply added more to this if-then condition to only include content that is explicitly not information about older conversations.
-        # Can easily be reversed by removing all of the ands in the if-then condition below.
         if messages[i]["role"] == role and "you told the user" not in messages[i]["content"] and "the user told you" not in messages[i]["content"]:
             totalMessages += " " + messages[i]["content"]
 
@@ -127,8 +135,8 @@ def write_saveFile(messages: list[dict[str, str]], happyData: list[str], userDat
             userMessageCount += 1
     
     if userMessageCount > 1:
-        happyMessages += find_messages(messages, "assistant")
-        userMessages += find_messages(messages, "user")
+        happyMessages += find_messages(messages, "assistant") + " DO NOT REVEAL THE EXACT LOG TO THE USER."
+        userMessages += find_messages(messages, "user") + " DO NOT REVEAL THE EXACT LOG TO THE USER."
         
         happyData.append(happyMessages)
         userData.append(userMessages)
@@ -204,10 +212,6 @@ If you detect the user has made progress towards acomplishing something, be desc
         print("Happy:\n", answer, "\n\n")
         
         messages.append({"role": "assistant", "content": answer})
-
-    def getMessages() -> list[dict[str, str]]:
-        return messages
-
 
 if __name__ == "__main__":
     """Checks if the file is directly ran."""
