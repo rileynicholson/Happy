@@ -60,7 +60,7 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
         try:
             with open(userlogs, "r") as file:
                 userData.extend(json.load(file))
-
+                """
                 for i in range(len(userData)):
                     # I believe there could be a future bug here in this information because conversation history looks like it will be stored as:
                     #
@@ -71,7 +71,7 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                     #
                     # I am not sure if this is a safe design, but I do not want to risk confusing the model or leaving this design in for the model to confuse later.
                     messages.append({"role": "assistant", "content": userData[i]})
-        
+                """
         except Exception as e:
             new_page()
             print("Error: Program cannot access past conversations. Old data cannot be retreived.\n")
@@ -81,7 +81,7 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
         try:
             with open(happylogs, "r") as file:
                 happyData.extend(json.load(file))
-
+                """
                 for i in range(len(happyData)):
                     # I believe there could be a future bug here in this information because conversation history looks like it will be stored as:
                     #
@@ -92,11 +92,16 @@ def read_saveFile(messages: list[dict[str, str]], happyData: list[str], userData
                     #
                     # I am not sure if this is a safe design, but I do not want to risk confusing the model or leaving this design in for the model to confuse later.
                     messages.append({"role": "user", "content": happyData[i]})
-    
+                """
         except Exception as e:
             new_page()
             print("Error: Program cannot access past conversations. Old data cannot be retreived.\n")
             return
+        
+    if userlogs.is_file() and happylogs.is_file():
+        for i in range(len(userData)):
+            messages.append({"role": "assistant", "content": userData[i]})
+            messages.append({"role": "user", "content": happyData[i]})
 
 def find_messages(messages: list[dict[str, str]], role: str) -> str:
     """Finds the amount of messages a certain role has.
