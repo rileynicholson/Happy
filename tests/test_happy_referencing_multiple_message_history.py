@@ -39,7 +39,7 @@ def run_test() -> None:
             }
         ]
     
-    messages.append({"role": "system", "content": f"""
+    messages.append({"role": "user", "content": f"""
 On {date(2026, 8, 3)}, you told the user:  That sounds like fun! What are you most looking forward to at the party?  It's exciting when a large group of friends can get together for a celebration.
  The energy and atmosphere will be contagious. John sounds like a lucky guy to have so many people celebrating his birthday with him.
  What do you admire most about your friend John?
@@ -48,7 +48,7 @@ On {date(2026, 8, 3)}, you told the user:  That sounds like fun! What are you mo
  There's something exciting about playing a game with your friends in real time, right there on the spot. It makes for great memories.
 """})
     
-    messages.append({"role": "system", "content": f"""
+    messages.append({"role": "user", "content": f"""
 On {date(2026, 8, 5)}, you told the user:  That's wonderful to hear! It's always heartening when our efforts are appreciated,
 and it sounds like your party was a great success. How do you feel knowing that your effort made someone happy?
 Consider expressing gratitude for their kind words or reciprocating the positivity they've shared with you.
@@ -61,7 +61,7 @@ By expressing gratitude and appreciation for one another, we can foster a sense 
 I'm here to help you navigate these aspects of friendship and provide guidance whenever needed. 
 """})
     
-    messages.append({"role": "system", "content": f"""
+    messages.append({"role": "assistant", "content": f"""
 On {date(2026, 8, 3)}, the user told you:  Hey! I am going to a pizza place for a Birthday Party later! I am looking forward to seeing everyone!
  A lot of people are going to be there, I think 22 people? I know! I am super excited! It's for my friend John.
  He's just a cool dude, and he cares about the people around him, he is a great guy.
@@ -69,7 +69,7 @@ On {date(2026, 8, 3)}, the user told you:  Hey! I am going to a pizza place for 
  I love Galaga and Pacman!
 """})
     
-    messages.append({"role": "system", "content": f"""
+    messages.append({"role": "assistant", "content": f"""
 On {date(2026, 8, 5)}, the user told you:  My friend John just sent me a thank you message for the party I went to! What should I send back!
 I might just tell him how awesome of a friend he is! I think I am going to do just that, thanks! 
 """})
